@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { RegisterableModule } from "../registry/types.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { execNansen } from "../lib/nansen-cli.js";
 
 const tokenFlowModule: RegisterableModule = {
   type: "tool",
@@ -26,21 +27,41 @@ const tokenFlowModule: RegisterableModule = {
       async (args) => {
         const { token, chain, flowType, timeframe } = args;
 
-        const result = {
-          token,
-          chain,
-          flowType,
-          timeframe,
-          status: "placeholder",
-          message: `Token Flow Analyzer ready — will query Nansen API for ${token} ${flowType} flows on ${chain} over ${timeframe}.`,
-          nextStep: "Connect NANSEN_API_KEY in .env to activate live data.",
-        };
+        const cliArgs = [
+          '--chain', chain,
+          '--token', token,
+        ];
+
+        // Currently we map to 'token flow-intelligence' which gives a holistic view
+        const response = await execNansen('research token flow-intelligence', cliArgs);
+
+        if (!response.success) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: `Error executing Nansen token analysis for ${token} on ${chain}: ${response.error || 'Unknown error'}`
+              }
+            ],
+            isError: true
+          };
+        }
 
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(result, null, 2),
+              text: JSON.stringify({
+                metadata: {
+                  token,
+                  chain,
+                  flowType,
+                  timeframe,
+                  status: "live",
+                  source: "Nansen CLI -> MCP Nexus"
+                },
+                data: response.data
+              }, null, 2),
             },
           ],
         };

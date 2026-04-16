@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { RegisterableModule } from "../registry/types.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { execNansen } from "../lib/nansen-cli.js";
 
 const walletProfilerModule: RegisterableModule = {
   type: "tool",
@@ -24,27 +25,38 @@ const walletProfilerModule: RegisterableModule = {
       async (args) => {
         const { address, chain, includeHistory, includePnl } = args;
 
-        const result = {
-          address,
-          chain,
-          includeHistory,
-          includePnl,
-          status: "placeholder",
-          message: `Wallet Profiler ready — will query Nansen API for address ${address} on ${chain}.`,
-          sections: [
-            includeHistory ? "transaction_history" : null,
-            includePnl ? "pnl_analysis" : null,
-            "nansen_labels",
-            "portfolio_composition",
-          ].filter(Boolean),
-          nextStep: "Connect NANSEN_API_KEY in .env to activate live data.",
+        const results: any = {
+          metadata: {
+            address,
+            chain,
+            status: "live",
+            source: "Nansen CLI -> MCP Nexus"
+          },
+          data: {}
         };
+
+        const promises = [];
+
+        // Always fetch balance
+        promises.push(
+          execNansen('research profiler balance', ['--address', address, '--chain', chain])
+            .then(res => { if (res.success) results.data.balance = res.data; else results.data.balanceError = res.error; })
+        );
+
+        if (includePnl) {
+          promises.push(
+            execNansen('research profiler pnl-summary', ['--address', address, '--chain', chain])
+              .then(res => { if (res.success) results.data.pnl = res.data; else results.data.pnlError = res.error; })
+          );
+        }
+
+        await Promise.all(promises);
 
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(result, null, 2),
+              text: JSON.stringify(results, null, 2),
             },
           ],
         };
