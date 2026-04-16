@@ -1,0 +1,15 @@
+{
+  "servers": {
+    "nansen-nexus-stdio": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "./build/index.js"
+      ]
+    },
+    "nansen-nexus-http": {
+      "type": "http",
+      "url": "http://localhost:3000/mcp"
+    }
+  }
+}
