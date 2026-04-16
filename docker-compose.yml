@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  nansen-nexus-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nansen-nexus-mcp
+    environment:
+      - STARTER_TRANSPORT=http
+      - PORT=3000
+      - CORS_ORIGIN=*
+      - NODE_ENV=production
+      - NANSEN_API_KEY=${NANSEN_API_KEY}
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/mcp', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
