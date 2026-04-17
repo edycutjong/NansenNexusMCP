@@ -23,9 +23,9 @@ const walletProfilerModule: RegisterableModule = {
           .describe("Include profit/loss analysis"),
       },
       async (args) => {
-        const { address, chain, includeHistory, includePnl } = args;
+        const { address, chain, includePnl } = args;
 
-        const results: any = {
+        const results: Record<string, unknown> = {
           metadata: {
             address,
             chain,

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { RegisterableModule } from "../registry/types.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { execNansen } from "../lib/nansen-cli.js";
 
 const smartMoneyModule: RegisterableModule = {
   type: "tool",
@@ -25,21 +26,42 @@ const smartMoneyModule: RegisterableModule = {
       async (args) => {
         const { chain, timeframe, entityType, limit } = args;
 
-        const result = {
-          chain,
-          timeframe,
-          entityType,
-          limit,
-          status: "placeholder",
-          message: `Smart Money Tracker ready — will query Nansen API for ${entityType} entities on ${chain} over ${timeframe}. Limit: ${String(limit)}.`,
-          nextStep: "Connect NANSEN_API_KEY in .env to activate live data.",
-        };
+        // Based on entityType or just general tracking, we use netflow as the default tracking mechanism
+        // Nansen API format: research smart-money <command> --chain <chain>
+        const cliArgs = [
+          '--chain', chain,
+          '--limit', String(limit),
+        ];
+
+        // Currently we map to 'smart-money netflow'
+        const response = await execNansen('research smart-money netflow', cliArgs);
+
+        if (!response.success) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: `Error executing Nansen tracking on ${chain}: ${response.error || 'Unknown error'}`
+              }
+            ],
+            isError: true
+          };
+        }
 
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(result, null, 2),
+              text: JSON.stringify({
+                metadata: {
+                  chain,
+                  timeframe,
+                  entityType,
+                  status: "live",
+                  source: "Nansen CLI -> MCP Nexus"
+                },
+                data: response.data
+              }, null, 2),
             },
           ],
         };
