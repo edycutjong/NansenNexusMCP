@@ -5,10 +5,13 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 test('smart-money-tracker registers successfully and callback executes', async () => {
     let toolName = '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     let toolCb: Function | null = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let toolSchema: any = null;
 
     const mockServer = {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-function-type
         tool: (name: string, description: string, schema: any, callback: Function) => {
             toolName = name;
             toolSchema = schema;

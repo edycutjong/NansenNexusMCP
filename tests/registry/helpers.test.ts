@@ -69,6 +69,7 @@ test('isFailedResult works correctly', () => {
 });
 
 test('countResults computes stats', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const results: any[] = [
     { status: 'fulfilled', value: { success: true } },
     { status: 'fulfilled', value: { success: false } },
@@ -116,7 +117,9 @@ test('Log functions do not throw', () => {
     // Coverage for failed module logger
     logFailedModules([
         { status: 'rejected', reason: 'err' },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         { status: 'fulfilled', value: { success: false, name: 'fail', error: 'err2' } } as any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         { status: 'fulfilled', value: { success: true, name: 'pass' } } as any
     ]);
   } finally {

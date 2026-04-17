@@ -1,0 +1,11 @@
+{
+  "all": true,
+  "src": ["src"],
+  "exclude": [
+    "tests/**",
+    "build/**",
+    "**/*.d.ts",
+    "dev.js"
+  ],
+  "reporter": ["text", "html"]
+}
