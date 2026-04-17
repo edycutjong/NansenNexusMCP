@@ -9,7 +9,20 @@ import { autoRegisterModules } from "../registry/auto-loader.js";
 
 type TransportMode = "stdio" | "http";
 
+// CRITICAL: Prevent any dependency (like dotenv) from writing to stdout
+// and breaking the JSON-RPC over stdio transport.
+const originalLog = console.log;
+const originalStdoutWrite = process.stdout.write;
+
+// Temporarily hijack stdout entirely during boot
+console.log = console.error;
+process.stdout.write = process.stderr.write.bind(process.stderr) as any;
+
 config();
+
+// Once dotenv is done, it's safer to leave console.log redirected to stderr for stdio mode,
+// but we MUST restore stdout.write so the MCP SDK can actually send JSON-RPC messages!
+process.stdout.write = originalStdoutWrite;
 
 export async function boot(
   mode?: TransportMode
@@ -38,6 +51,9 @@ export async function boot(
     console.error("Nansen Nexus MCP running on stdio");
     return;
   }
+
+  // Restore console.log for HTTP mode
+  console.log = originalLog;
 
   const app = express();
   app.use(express.json({ limit: "1mb" }));

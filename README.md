@@ -29,22 +29,67 @@ All tools are auto-discovered at boot via the module registry system. **Just dro
 
 ## 🚀 Quick Start
 
+Choose your preferred way to run the MCP server: **Make**, **Docker**, or **Manual NPM**.
+
+### Option A: Using `make` (Recommended)
+
+The included `Makefile` abstracts all the setup and execution commands.
+
+```bash
+# 1. Install dependencies and create .env
+make setup
+# ⚠️ Edit .env and insert your NANSEN_API_KEY
+
+# 2. Build the project
+make build
+
+# 3. Run the interactive MCP Inspector UI
+make inspect
+
+# 4. Or, run in Stdio mode (for Cursor / Claude Desktop)
+make serve-stdio
+```
+
+### Option B: Using Docker
+
+Perfect for cloud deployments (like Cloud Run) or keeping your local environment clean. The server runs on HTTP transport by default.
+
+```bash
+# 1. Create your env file
+cp .env.example .env
+# ⚠️ Edit .env and insert your NANSEN_API_KEY
+
+# 2. Build and spin up the container in the background
+docker compose up --build -d
+
+# 3. View live logs
+docker compose logs -f
+
+# 4. Shut down when finished
+docker compose down
+```
+
+*(Alternatively, you can just use `make docker-up` and `make docker-down`)*
+
+### Option C: Manual NPM
+
+For developers looking to run commands manually.
+
 ```bash
 # 1. Install dependencies
 npm install
 
 # 2. Configure API key
 cp .env.example .env
-# Edit .env with your NANSEN_API_KEY
+# ⚠️ Edit .env and insert your NANSEN_API_KEY
 
 # 3. Build & run (stdio mode — for Claude Desktop / Cursor)
 npm run build
 npm run serve:stdio
 
-# 4. Or run in HTTP mode (for remote agents / Docker)
+# 4. Or run in HTTP mode (for remote agents)
 npm run serve:http
 ```
-
 ### Register in Claude Desktop
 
 Add to your `claude_desktop_config.json`:
