@@ -25,14 +25,14 @@ const walletProfilerModule: RegisterableModule = {
       async (args) => {
         const { address, chain, includePnl } = args;
 
-        const results: Record<string, unknown> = {
+        const results = {
           metadata: {
             address,
             chain,
             status: "live",
             source: "Nansen CLI -> MCP Nexus"
           },
-          data: {}
+          data: {} as Record<string, unknown>
         };
 
         const promises = [];

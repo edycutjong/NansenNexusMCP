@@ -4,8 +4,8 @@ import serverStatusModule from '../../src/resources/server-status.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 test('server-status registers successfully and callback executes', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-    let resCb: Function | null = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let resCb: any = null;
 
     const mockServer = {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
