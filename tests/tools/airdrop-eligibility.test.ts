@@ -5,7 +5,7 @@ import { setNansenMock } from '../../src/lib/nansen-cli.js';
 
 describe('airdrop-eligibility tool', () => {
     afterEach(() => {
-        setNansenMock(null as any);
+        setNansenMock(null);
     });
 
     test('handles balance fetch failure', async () => {

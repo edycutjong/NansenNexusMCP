@@ -6,8 +6,8 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 describe('stable-shield tool', () => {
     afterEach(() => { 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setNansenMock(null as any); 
+         
+        setNansenMock(null); 
     });
 
     test('executes wallet-focus mode successfully when address provided', async () => {

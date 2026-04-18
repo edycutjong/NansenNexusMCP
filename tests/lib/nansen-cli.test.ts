@@ -1,7 +1,6 @@
 import { describe, test, afterEach, beforeEach } from 'node:test';
 import assert from 'node:assert';
 import { execNansen, setNansenMock, setExecFileMock } from '../../src/lib/nansen-cli.js';
-import cp from 'node:child_process';
 
 describe('nansen-cli core library', () => {
   let originalEnv: string | undefined;
@@ -34,8 +33,10 @@ describe('nansen-cli core library', () => {
 
   test('executes nansen over child_process when not in test mode', async () => {
     process.env.NODE_ENV = 'production';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setExecFileMock((cmd: string, args: unknown, opts: unknown, cb: any) => {
       cb(null, '{"test":"value"}', '');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return {} as any;
     });
 
@@ -47,8 +48,10 @@ describe('nansen-cli core library', () => {
 
   test('handles execFile error with JSON parseable stderr', async () => {
     process.env.NODE_ENV = 'production';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setExecFileMock((cmd: string, args: unknown, opts: unknown, cb: any) => {
       cb(new Error('fail'), '', '{"error":"some error","code":"ERR1"}');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return {} as any;
     });
 
@@ -60,8 +63,10 @@ describe('nansen-cli core library', () => {
 
   test('handles execFile error with non-JSON fallback', async () => {
     process.env.NODE_ENV = 'production';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setExecFileMock((cmd: string, args: unknown, opts: unknown, cb: any) => {
       cb(new Error('raw error'), '', 'raw string');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return {} as any;
     });
 
@@ -73,8 +78,10 @@ describe('nansen-cli core library', () => {
 
   test('handles stdout JSON parsing error', async () => {
     process.env.NODE_ENV = 'production';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setExecFileMock((cmd: string, args: unknown, opts: unknown, cb: any) => {
       cb(null, '{"invalid_json...', '');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return {} as any;
     });
 

@@ -6,7 +6,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 describe('hot-contracts-scanner tool', () => {
     afterEach(() => {
-        setNansenMock(null as any);
+        setNansenMock(null);
     });
 
     test('registers successfully and executes success path', async () => {

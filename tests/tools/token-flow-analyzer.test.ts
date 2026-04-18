@@ -6,8 +6,8 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 describe('token-flow-analyzer tool', () => {
     afterEach(() => { 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setNansenMock(null as any); 
+         
+        setNansenMock(null); 
     });
 
     test('registers successfully and executes success path', async () => {

@@ -5,8 +5,8 @@ import { setNansenMock } from '../../src/lib/nansen-cli.js';
 
 describe('perp-funding-monitor tool', () => {
     afterEach(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setNansenMock(null as any);
+         
+        setNansenMock(null);
     });
 
     test('handles data fetch failure', async () => {
