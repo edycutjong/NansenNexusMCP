@@ -5,6 +5,6 @@ export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    ignores: ['build/', 'coverage/', 'node_modules/']
+    ignores: ['build/', 'coverage/', 'node_modules/', '.tmp_repos/']
   }
 );
