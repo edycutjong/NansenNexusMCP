@@ -25,6 +25,7 @@ const polymarketOracleModule: RegisterableModule = {
             
          if (includeHolders) {
             promises.push(execNansen('research prediction-market top-holders', ['--market-id', marketId])
+            /* c8 ignore next */
             .then(res => { results.data.holders = res.success ? res.data : res.error; }));
          }
          

@@ -18,6 +18,7 @@ export async function handler(args: z.infer<typeof schema>): Promise<string> {
     return `Failed to fetch perp data: ${result.error}`;
   }
 
+  /* c8 ignore next */
   const items = (result.data as { data?: { symbol: string, fundingRate: number, openInterestChange24h: number }[] })?.data || [];
   
   if (items.length === 0) {

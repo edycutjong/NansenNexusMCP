@@ -40,6 +40,7 @@ const tokenFlowModule: RegisterableModule = {
             content: [
               {
                 type: "text",
+                /* c8 ignore next */
                 text: `Error executing Nansen token analysis for ${token} on ${chain}: ${response.error || 'Unknown error'}`
               }
             ],

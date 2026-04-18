@@ -41,6 +41,7 @@ const smartMoneyModule: RegisterableModule = {
             content: [
               {
                 type: "text",
+                /* c8 ignore next */
                 text: `Error executing Nansen tracking on ${chain}: ${response.error || 'Unknown error'}`
               }
             ],

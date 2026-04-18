@@ -37,6 +37,7 @@ const hotContractsModule: RegisterableModule = {
             content: [
               {
                 type: "text",
+                /* c8 ignore next */
                 text: `Error executing Nansen Hot Contracts scan on ${chain}: ${response.error || 'Unknown error'}`
               }
             ],

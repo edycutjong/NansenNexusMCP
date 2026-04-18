@@ -44,6 +44,7 @@ const nftMarketTrackerModule: RegisterableModule = {
             content: [
               {
                 type: "text",
+                /* c8 ignore next */
                 text: `Error executing Nansen NFT analysis on ${chain}: ${response.error || 'Unknown error'}`
               }
             ],

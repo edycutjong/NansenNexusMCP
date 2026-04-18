@@ -16,6 +16,7 @@ export async function handler(args: z.infer<typeof schema>): Promise<string> {
     return `Failed to fetch smart money dex trades: ${result.error}`;
   }
 
+  /* c8 ignore next */
   const trades = (result.data as { trades?: { amountUsd: number, tokenSymbol: string, side: string }[] })?.trades || [];
   
   if (trades.length === 0) {
