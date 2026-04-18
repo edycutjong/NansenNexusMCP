@@ -21,3 +21,4 @@ build/tests/
 # Cache
 .nansen-cache/
 coverage/
+.tmp_repos/
