@@ -1,4 +1,10 @@
-import { execFile } from 'node:child_process';
+import { execFile as defaultExecFile } from 'node:child_process';
+
+// Allow overriding execFile for error testing paths
+export let internalExecFile = defaultExecFile;
+export function setExecFileMock(handler: typeof defaultExecFile | null) {
+  internalExecFile = handler || defaultExecFile;
+}
 
 export interface NansenResponse<T = unknown> {
   success: boolean;
@@ -6,6 +12,13 @@ export interface NansenResponse<T = unknown> {
   error?: string;
   code?: string;
   status?: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let testMockHandler: ((command: string, args: string[]) => Promise<NansenResponse<any>>) | null = null;
+
+export function setNansenMock(handler: typeof testMockHandler) {
+  testMockHandler = handler;
 }
 
 /**
@@ -17,6 +30,9 @@ export function execNansen<T = unknown>(
   args: string[] = [],
 ): Promise<NansenResponse<T>> {
   if (process.env.NODE_ENV === 'test') {
+    if (testMockHandler) {
+      return testMockHandler(command, args) as Promise<NansenResponse<T>>;
+    }
     return Promise.resolve({
       success: true,
       data: {
@@ -31,7 +47,7 @@ export function execNansen<T = unknown>(
   return new Promise((resolve) => {
     const fullArgs = [...command.split(' '), ...args, '--pretty'];
 
-    execFile('nansen', fullArgs, { maxBuffer: 10 * 1024 * 1024, timeout: 30_000 }, (error, stdout, stderr) => {
+    internalExecFile('nansen', fullArgs, { maxBuffer: 10 * 1024 * 1024, timeout: 30_000 }, (error, stdout, stderr) => {
       if (error) {
         // Try to parse error output as JSON
         const errorText = stderr || stdout || error.message;
