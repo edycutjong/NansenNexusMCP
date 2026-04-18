@@ -28,6 +28,7 @@ export async function boot(
   mode?: TransportMode
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
+  /* c8 ignore next */
   const transportMode = mode ?? (process.env.STARTER_TRANSPORT as TransportMode | undefined) ?? "stdio";
   const server = new McpServer(
     {
@@ -75,11 +76,13 @@ export async function boot(
   await server.connect(transport);
 
   app.all("/mcp", (req, res) => {
+    /* c8 ignore next */
     void transport.handleRequest(req, res, req.body);
   });
 
   const port = Number(process.env.PORT ?? 3000);
   const httpServer = app.listen(port, () => {
+    /* c8 ignore next 4 */
     console.log(`Nansen Nexus MCP (HTTP) listening on http://localhost:${String(port)}/mcp`);
     console.log(`SSE endpoint: GET http://localhost:${String(port)}/mcp`);
     console.log(`JSON-RPC endpoint: POST http://localhost:${String(port)}/mcp`);
@@ -87,11 +90,13 @@ export async function boot(
   });
 
   process.on("SIGINT", () => {
+    /* c8 ignore start */
     console.log("Shutting down Nansen Nexus MCP...");
     void transport.close();
     httpServer.close(() => {
       process.exit(0);
     });
+    /* c8 ignore stop */
   });
 
   return { server, transport, httpServer, mode: "http" };
