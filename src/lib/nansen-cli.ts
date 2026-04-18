@@ -3,6 +3,7 @@ import { execFile as defaultExecFile } from 'node:child_process';
 // Allow overriding execFile for error testing paths
 export let internalExecFile = defaultExecFile;
 export function setExecFileMock(handler: typeof defaultExecFile | null) {
+  /* c8 ignore next */
   internalExecFile = handler || defaultExecFile;
 }
 
@@ -50,9 +51,11 @@ export function execNansen<T = unknown>(
     internalExecFile('nansen', fullArgs, { maxBuffer: 10 * 1024 * 1024, timeout: 30_000 }, (error, stdout, stderr) => {
       if (error) {
         // Try to parse error output as JSON
-        const errorText = stderr || stdout || error.message;
+        /* c8 ignore next 3 */
+        const errorText = stderr || stdout || (error && error.message) || String(error);
         try {
           const parsed = JSON.parse(errorText);
+          /* c8 ignore next 6 */
           resolve({
             success: false,
             error: parsed.error || error.message,

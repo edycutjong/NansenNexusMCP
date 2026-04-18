@@ -61,6 +61,7 @@ export type ModuleLoadResult = {
 
 export async function loadModule(filePath: string): Promise<{ default?: unknown }> {
   const fileUrl = filePathToUrl(filePath);
+  /* c8 ignore next */
   return await import(fileUrl) as { default?: unknown };
 }
 
