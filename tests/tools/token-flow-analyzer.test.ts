@@ -1,38 +1,47 @@
-import { test } from 'node:test';
+import { test, describe, afterEach } from 'node:test';
 import assert from 'node:assert';
 import tokenFlowModule from '../../src/tools/token-flow-analyzer.js';
+import { setNansenMock } from '../../src/lib/nansen-cli.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-test('token-flow-analyzer registers successfully and callback executes', async () => {
-    let toolName = '';
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let toolCb: any = null;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let toolSchema: any = null;
-
-    const mockServer = {
+describe('token-flow-analyzer tool', () => {
+    afterEach(() => { 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        tool: (name: string, description: string, schema: any, callback: any) => {
-            toolName = name;
-            toolSchema = schema;
-            toolCb = callback;
-        }
-    } as unknown as McpServer;
-
-    tokenFlowModule.register(mockServer);
-
-    assert.strictEqual(toolName, 'token-flow-analyzer');
-    assert.ok(toolSchema);
-    assert.ok(toolCb);
-
-    const result = await toolCb!({
-        token: '0x123',
-        chain: 'ethereum',
-        flowType: 'cex_flows',
-        timeframe: '24h'
+        setNansenMock(null as any); 
     });
 
-    assert.ok(result);
-    assert.strictEqual(result.content[0].type, 'text');
-    assert.ok(result.content[0].text.includes('"live"'));
+    test('registers successfully and executes success path', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let toolCb: any = null;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mockServer = { tool: (name: string, description: string, schema: any, callback: any) => { toolCb = callback; } } as unknown as McpServer;
+        tokenFlowModule.register(mockServer);
+
+        setNansenMock(async () => ({ success: true, data: { flow: true } }));
+
+        const result = await toolCb!({
+            token: '0x123',
+            chain: 'ethereum',
+            flowType: 'cex_flows',
+            timeframe: '24h'
+        });
+
+        const parsed = JSON.parse(result.content[0].text);
+        assert.strictEqual(parsed.data.flow, true);
+    });
+
+    test('handles CLI error gracefully', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let toolCb: any = null;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mockServer = { tool: (name: string, description: string, schema: any, callback: any) => { toolCb = callback; } } as unknown as McpServer;
+        tokenFlowModule.register(mockServer);
+
+        setNansenMock(async () => ({ success: false, error: 'Flow api down' }));
+
+        const result = await toolCb!({ token: '0x123', chain: 'ethereum', flowType: 'cex_flows', timeframe: '24h' });
+        
+        assert.strictEqual(result.isError, true);
+        assert.ok(result.content[0].text.includes('Flow api down'));
+    });
 });
