@@ -16,7 +16,7 @@ const originalStdoutWrite = process.stdout.write;
 
 // Temporarily hijack stdout entirely during boot
 console.log = console.error;
-process.stdout.write = process.stderr.write.bind(process.stderr) as any;
+process.stdout.write = process.stderr.write.bind(process.stderr) as unknown as typeof process.stdout.write;
 
 config();
 
@@ -26,7 +26,8 @@ process.stdout.write = originalStdoutWrite;
 
 export async function boot(
   mode?: TransportMode
-): Promise<void> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any> {
   const transportMode = mode ?? (process.env.STARTER_TRANSPORT as TransportMode | undefined) ?? "stdio";
   const server = new McpServer(
     {
@@ -49,7 +50,7 @@ export async function boot(
     const transport = new StdioServerTransport();
     await server.connect(transport);
     console.error("Nansen Nexus MCP running on stdio");
-    return;
+    return { server, transport, mode: "stdio" };
   }
 
   // Restore console.log for HTTP mode
@@ -92,4 +93,6 @@ export async function boot(
       process.exit(0);
     });
   });
+
+  return { server, transport, httpServer, mode: "http" };
 }
