@@ -1,6 +1,6 @@
 # 🧠 Nansen Nexus MCP
 
-> **Compound Skills Router for AI Agents** — Enterprise-grade MCP server exposing Nansen on-chain intelligence as composable AI tools.
+> **Compound Skills Router for AI Agents** — Agentic orchestration layer that pre-packages complex, multi-step Nansen workflows into single LLM tool calls.
 
 [![CI](https://github.com/edycutjong/NansenNexusMCP/actions/workflows/ci.yml/badge.svg)](https://github.com/edycutjong/NansenNexusMCP/actions/workflows/ci.yml)
 [![Status](https://img.shields.io/badge/status-stable-brightgreen)](https://github.com/edycutjong/NansenNexusMCP)
@@ -15,6 +15,68 @@
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://github.com/edycutjong/NansenNexusMCP)
 [![Nansen CLI](https://img.shields.io/badge/Nansen%20CLI-50%2B%20endpoints-FF6B35)](https://docs.nansen.ai/)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)](Dockerfile)
+
+---
+
+## 🔑 Why Nansen Nexus? (vs. the Official Nansen MCP)
+
+Nansen offers an excellent [official MCP server](https://docs.nansen.ai/mcp/overview) with **24 tools** for raw data retrieval (`smart_traders_and_funds_token_balances`, `token_dex_trades`, `address_counterparties`, etc.). It's the foundation — and we build on top of it.
+
+**The problem:** When LLMs like Claude or Cursor try to chain 5–10 of those raw endpoints together for a complex investigation, they:
+
+- 🔴 **Hallucinate parameters** — Nansen's own docs list [5 gotchas](https://docs.nansen.ai/mcp/tools#common-gotchas) around inconsistent arg formats (`addresses: []` vs `address: ""` vs `wallet_address: ""`), case-sensitive enums (`"BUY"` not `"buy"`), and mixed `{request: {...}}` wrappers.
+- 🔴 **Blow up context windows** — chaining 8 endpoints means 8 round-trips of JSON in/out, eating 30–50K tokens before the LLM even starts reasoning.
+- 🔴 **Guess execution order** — "Should I call `address_related_addresses` before or after `address_counterparties` for Sybil detection?" The LLM doesn't know.
+
+**Nansen Nexus solves this as the Agentic Orchestration Layer (Level 2):**
+
+```
+┌──────────────────────────────────────────────────────┐
+│                   AI Agent (Claude, Cursor, etc.)     │
+│                     "Investigate wallet 0xABC"        │
+└────────────────────────┬─────────────────────────────┘
+                         │  1 tool call
+                         ▼
+┌──────────────────────────────────────────────────────┐
+│         Level 2: Nansen Nexus MCP (this repo)        │
+│                                                      │
+│   🧬 Compound Skills                                 │
+│   ┌────────────────┐ ┌────────────────┐              │
+│   │ network-       │ │ polymarket-    │              │
+│   │ traversal      │ │ oracle         │   ...×13     │
+│   │ (BFS + Sybil)  │ │ (SM Divergence)│              │
+│   └───────┬────────┘ └───────┬────────┘              │
+│           │  orchestrates     │                       │
+│           ▼                   ▼                       │
+│   ┌─────────────────────────────────────────┐        │
+│   │ Caching · Rate-limit routing · Data     │        │
+│   │ synthesis · Parameter normalization      │        │
+│   └─────────────────────┬───────────────────┘        │
+└─────────────────────────┼────────────────────────────┘
+                          │  N API calls (handled internally)
+                          ▼
+┌──────────────────────────────────────────────────────┐
+│        Level 1: Official Nansen MCP / REST API       │
+│                                                      │
+│   24 raw tools: token_dex_trades,                    │
+│   address_counterparties, wallet_pnl_summary, ...    │
+│                                                      │
+│   docs.nansen.ai/mcp                                 │
+└──────────────────────────────────────────────────────┘
+```
+
+| | Official Nansen MCP (Level 1) | Nansen Nexus (Level 2) |
+|---|---|---|
+| **Scope** | 1:1 API endpoint mapping | Multi-step compound workflows |
+| **Tool count** | 24 raw data tools | 13 compound skill tools |
+| **LLM calls needed** | 5–10 per investigation | **1** |
+| **Parameter handling** | LLM must know gotchas | Nexus normalizes internally |
+| **Context window cost** | ~30–50K tokens per chain | ~3–5K tokens per result |
+| **Example** | `token_flows` + `address_counterparties` + `wallet_pnl_summary` + `address_related_addresses` (4 calls, LLM chains) | `network-traversal` (1 call, BFS + Sybil built in) |
+| **Caching / Rate limits** | Managed by caller | Handled under the hood |
+| **Best for** | Simple, single-endpoint queries | Complex forensic investigations |
+
+> **TL;DR:** Use the official Nansen MCP for quick lookups. Use Nexus when your AI agent needs to *think across multiple data sources in a single step*.
 
 ---
 
@@ -130,7 +192,9 @@ docker compose down
 
 ---
 
-## 🛠️ Available Tools
+## 🛠️ Available Compound Skills
+
+Each tool below is a **compound skill** — it internally orchestrates multiple Nansen API calls, normalizes parameters, caches results, and returns a synthesized answer in a single response.
 
 | Tool | Description | Key Params |
 |------|-------------|------------|
@@ -295,7 +359,15 @@ docker compose down
             "buy_sell_pressure": 244951198.0397,
             "trader_count": 20986,
             "token_symbol": "xyz:SP500",
-... (truncated 111 lines) ...
+            "mark_price": 5180,
+            "funding": -0.0000127903,
+            "open_interest": 90015100.9588,
+            "previous_price_usd": 5051.49
+          }
+        ]
+      }
+    }
+  }
 }
 ```
 
@@ -331,11 +403,12 @@ docker compose down
             "closed": false,
             "end_date": "2026-04-15T00:00:00",
             "neg_risk": false,
-            "tags": [
-              "Iran",
-              "Israel",
-              "Geopolitics",
-... (truncated 331 lines) ...
+            "tags": ["Iran", "Israel", "Geopolitics"]
+          }
+        ]
+      }
+    }
+  }
 }
 ```
 
@@ -375,7 +448,11 @@ docker compose down
             "token_bought_fdv": 275882.872900164,
             "token_sold_fdv": 78499721374,
             "trade_value_usd": 665.8997310560211
-... (truncated 191 lines) ...
+          }
+        ]
+      }
+    }
+  }
 }
 ```
 
@@ -414,8 +491,12 @@ docker compose down
             "token_symbol": "GROK",
             "net_flow_1h_usd": 0,
             "net_flow_24h_usd": 23568.647689030906,
-            "net_flow_7d_usd": 23568.647689030906,
-... (truncated 130 lines) ...
+            "net_flow_7d_usd": 23568.647689030906
+          }
+        ]
+      }
+    }
+  }
 }
 ```
 
@@ -486,7 +567,11 @@ docker compose down
             "fresh_wallets_net_flow_usd": 0,
             "fresh_wallets_avg_flow_usd": 0,
             "fresh_wallets_wallet_count": 0
-... (truncated 7 lines) ...
+          }
+        ]
+      }
+    }
+  }
 }
 ```
 
@@ -586,8 +671,12 @@ docker compose down
             "volume_total_usd": 0,
             "buy_volume_usd": 0,
             "sell_volume_usd": 0,
-            "total_buys": 0,
-... (truncated 11 lines) ...
+            "total_buys": 0
+          }
+        }
+      }
+    }
+  }
 }
 ```
 
