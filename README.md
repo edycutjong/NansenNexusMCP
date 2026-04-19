@@ -64,9 +64,31 @@ Each of the 13 tools has a lineage — either derived from our own challenge pro
 
 ## 🚀 Quick Start
 
-Choose your preferred way to run the MCP server: **Make**, **Docker**, or **Manual NPM**.
+Choose your preferred way to run the MCP server: **NPX (Zero Config)**, **Make**, or **Docker**.
 
-### Option A: Using `make` (Recommended)
+### Register in Claude Desktop (The Zero-Config Way)
+
+Because Nexus is published on the global NPM registry, you do not even need to download this repository. Just add this to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "nansen-nexus": {
+      "command": "npx",
+      "args": ["-y", "nansen-nexus-mcp"],
+      "env": {
+        "NANSEN_API_KEY": "YOUR_NANSEN_API_KEY_HERE"
+      }
+    }
+  }
+}
+```
+
+*Restart Claude completely, and the 13 tools will immediately appear in your chat window.*
+
+---
+
+### Option A: Using `make` (For Local Development)
 
 The included `Makefile` abstracts all the setup and execution commands.
 
@@ -105,40 +127,6 @@ docker compose down
 ```
 
 *(Alternatively, you can just use `make docker-up` and `make docker-down`)*
-
-### Option C: Manual NPM
-
-For developers looking to run commands manually.
-
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Configure API key
-cp .env.example .env
-# ⚠️ Edit .env and insert your NANSEN_API_KEY
-
-# 3. Build & run (stdio mode — for Claude Desktop / Cursor)
-npm run build
-npm run serve:stdio
-
-# 4. Or run in HTTP mode (for remote agents)
-npm run serve:http
-```
-### Register in Claude Desktop
-
-Add to your `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "nansen-nexus": {
-      "command": "node",
-      "args": ["/path/to/NansenNexusMCP/build/index.js"]
-    }
-  }
-}
-```
 
 ---
 

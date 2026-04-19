@@ -2,7 +2,13 @@
   "name": "nansen-nexus-mcp",
   "version": "1.0.0",
   "description": "Enterprise-grade compound workflows for AI Agents — powered by Nansen CLI",
-  "main": "index.js",
+  "main": "build/index.js",
+  "files": [
+    "build"
+  ],
+  "bin": {
+    "nansen-nexus": "./build/index.js"
+  },
   "type": "module",
   "scripts": {
     "test": "NODE_ENV=test node --import tsx --test tests/**/*.test.ts",

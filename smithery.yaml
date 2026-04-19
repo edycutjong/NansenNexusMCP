@@ -1,0 +1,8 @@
+startCommand: npm run serve:stdio
+buildCommands:
+  - npm install
+  - npm run build
+environmentVariables:
+  NANSEN_API_KEY:
+    description: Nansen API Key required for querying on-chain intelligence
+    required: true
