@@ -111,9 +111,19 @@ Add to your `claude_desktop_config.json`:
 
 | Tool | Description | Key Params |
 |------|-------------|------------|
-| `smart-money-tracker` | Track labeled wallet movements | `chain`, `timeframe`, `entityType` |
-| `token-flow-analyzer` | CEX/DEX flow analysis | `token`, `chain`, `flowType` |
-| `wallet-profiler` | Full wallet dossier | `address`, `chain`, `includePnl` |
+| `smart-money-tracker` | Track labeled wallet movements across chains | `chain`, `timeframe`, `entityType` |
+| `token-flow-analyzer` | CEX/DEX inflow/outflow analysis | `token`, `chain`, `flowType` |
+| `wallet-profiler` | Full wallet dossier: labels, PnL, history | `address`, `chain`, `includePnl` |
+| `hot-contracts-scanner` | Discover trending Smart Money contracts | `chain`, `timeframe`, `limit` |
+| `nft-market-tracker` | NFT collection volume, floor, sweeps | `collection`, `chain`, `metric` |
+| `network-traversal` | BFS wallet traversal for Sybil detection | `address`, `chain`, `depth` |
+| `polymarket-oracle` | Polymarket odds vs Smart Money divergence | `marketId`, `includeHolders` |
+| `stable-shield` | Monitor institutional stablecoin parking | `address`, `chain` |
+| `wallet-roast` | Analyze worst trades for roasting material | `address`, `chain` |
+| `wyckoff-screener` | Screen tokens for Wyckoff phases | `tokenAddress`, `chain` |
+| `perp-funding-monitor` | Perp market funding rate anomalies | `token` |
+| `smart-money-copy-trade` | High-conviction copy-trade signals | `chain`, `minTradeUsd` |
+| `airdrop-eligibility` | Estimate wallet airdrop eligibility | `address` |
 
 ---
 
@@ -121,20 +131,30 @@ Add to your `claude_desktop_config.json`:
 
 ```
 src/
-├── index.ts                    # Entry point
+├── index.ts                        # Entry point
 ├── server/
-│   └── boot.ts                 # Dual transport (stdio/HTTP) server
+│   └── boot.ts                     # Dual transport (stdio/HTTP) server
 ├── registry/
-│   ├── auto-loader.ts          # Auto-discovery engine
-│   ├── helpers.ts              # Module loading utilities
-│   ├── module-processor.ts     # Validation & registration
-│   └── types.ts                # RegisterableModule interface
+│   ├── auto-loader.ts              # Auto-discovery engine
+│   ├── helpers.ts                  # Module loading utilities
+│   ├── module-processor.ts         # Validation & registration
+│   └── types.ts                    # RegisterableModule interface
 ├── tools/
-│   ├── smart-money-tracker.ts  # Smart Money skill
-│   ├── token-flow-analyzer.ts  # Token Flow skill
-│   └── wallet-profiler.ts      # Wallet Profiling skill
+│   ├── smart-money-tracker.ts      # Smart Money movements
+│   ├── token-flow-analyzer.ts      # Token flow intelligence
+│   ├── wallet-profiler.ts          # Wallet dossier
+│   ├── hot-contracts-scanner.ts    # Trending contracts
+│   ├── nft-market-tracker.ts       # NFT market analysis
+│   ├── network-traversal.ts        # BFS Sybil detection
+│   ├── polymarket-oracle.ts        # Prediction market oracle
+│   ├── stable-shield.ts            # Stablecoin institutional guardian
+│   ├── wallet-roast.ts             # Wallet roasting
+│   ├── wyckoff-screener.ts         # Wyckoff phase classifier
+│   ├── perp-funding-monitor.ts     # Perp funding anomalies
+│   ├── smart-money-copy-trade.ts   # Copy-trade signals
+│   └── airdrop-eligibility.ts      # Airdrop scoring
 └── resources/
-    └── server-status.ts        # Server health resource
+    └── server-status.ts            # Server health resource
 ```
 
 ---
