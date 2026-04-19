@@ -20,6 +20,8 @@
     "gen:tool": "hygen tool new",
     "gen:prompt": "hygen prompt new",
     "gen:resource": "hygen resource new",
+    "dump:tools": "tsx scripts/dump-tools.ts",
+    "docs:update": "tsx scripts/restore-dumps.ts && tsx scripts/update-readme.ts",
     "ci": "npm run typecheck && npm run lint && npm run test:coverage"
   },
   "keywords": [

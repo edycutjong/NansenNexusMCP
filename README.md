@@ -160,6 +160,452 @@ Add to your `claude_desktop_config.json`:
 | `smart-money-copy-trade` | High-conviction copy-trade signals | `chain`, `minTradeUsd` |
 | `airdrop-eligibility` | Estimate wallet airdrop eligibility | `address` |
 
+### 🔍 Example Outputs
+
+<!-- EXAMPLES_START -->
+
+<details>
+<summary><code>airdrop-eligibility</code></summary>
+
+```json
+{
+  "metadata": {
+    "status": "historical_live",
+    "source": "Nansen CLI -> MCP Nexus"
+  },
+  "data": {
+    "success": true,
+    "data": {
+      "success": true,
+      "data": {
+        "pagination": {
+          "page": 1,
+          "per_page": 10,
+          "is_last_page": true
+        },
+        "data": []
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><code>hot-contracts-scanner</code></summary>
+
+```json
+{
+  "metadata": {
+    "status": "historical_live",
+    "source": "Nansen CLI -> MCP Nexus"
+  },
+  "data": {
+    "success": false,
+    "error": "Unknown research category: hot-contracts. Available: smart-money, profiler, token, search, perp, portfolio, points, prediction-market",
+    "code": "UNKNOWN",
+    "status": null
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><code>network-traversal</code></summary>
+
+```json
+{
+  "metadata": {
+    "status": "historical_live",
+    "source": "Nansen CLI -> MCP Nexus"
+  },
+  "data": {
+    "success": true,
+    "data": {
+      "success": true,
+      "data": {
+        "pagination": {
+          "page": 1,
+          "per_page": 10,
+          "is_last_page": true
+        },
+        "data": []
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><code>nft-market-tracker</code></summary>
+
+```json
+{
+  "metadata": {
+    "status": "historical_live",
+    "source": "Nansen CLI -> MCP Nexus"
+  },
+  "data": {
+    "success": true,
+    "data": {
+      "nfts": [
+        "pudgy"
+      ]
+    },
+    "cmd": "research nft paradise",
+    "args": [
+      "--chain",
+      "ethereum",
+      "--timeframe",
+      "24h",
+      "--metric",
+      "volume",
+      "--collection",
+      "0x123"
+    ]
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><code>perp-funding-monitor</code></summary>
+
+```json
+{
+  "metadata": {
+    "status": "historical_live",
+    "source": "Nansen CLI -> MCP Nexus"
+  },
+  "data": {
+    "success": true,
+    "data": {
+      "success": true,
+      "data": {
+        "data": [
+          {
+            "volume": 70088716064.8529,
+            "buy_volume": 35365202382.73637,
+            "sell_volume": 34723513682.11654,
+            "buy_sell_pressure": 641688700.61983,
+            "trader_count": 82712,
+            "token_symbol": "BTC",
+            "mark_price": 75669,
+            "funding": -0.0000183626,
+            "open_interest": 2141165415.90468,
+            "previous_price_usd": 71213
+          },
+          {
+            "volume": 6683711284.2131,
+            "buy_volume": 3464331241.1264,
+            "sell_volume": 3219380043.0867,
+            "buy_sell_pressure": 244951198.0397,
+            "trader_count": 20986,
+            "token_symbol": "xyz:SP500",
+... (truncated 111 lines) ...
+}
+```
+
+</details>
+
+<details>
+<summary><code>polymarket-oracle</code></summary>
+
+```json
+{
+  "metadata": {
+    "status": "historical_live",
+    "source": "Nansen CLI -> MCP Nexus"
+  },
+  "data": {
+    "success": true,
+    "data": {
+      "success": true,
+      "data": {
+        "pagination": {
+          "page": 1,
+          "per_page": 10,
+          "is_last_page": false
+        },
+        "data": [
+          {
+            "market_id": "1994007",
+            "question": "Israel x Hezbollah ceasefire by April 18, 2026?",
+            "slug": "israel-x-hezbollah-ceasefire-by-april-18-2026",
+            "event_id": "242420",
+            "event_title": "Israel x Hezbollah ceasefire by...?",
+            "active": true,
+            "closed": false,
+            "end_date": "2026-04-15T00:00:00",
+            "neg_risk": false,
+            "tags": [
+              "Iran",
+              "Israel",
+              "Geopolitics",
+... (truncated 331 lines) ...
+}
+```
+
+</details>
+
+<details>
+<summary><code>smart-money-copy-trade</code></summary>
+
+```json
+{
+  "metadata": {
+    "status": "historical_live",
+    "source": "Nansen CLI -> MCP Nexus"
+  },
+  "data": {
+    "success": true,
+    "data": {
+      "success": true,
+      "data": {
+        "data": [
+          {
+            "chain": "ethereum",
+            "block_timestamp": "2026-04-19T00:36:59",
+            "transaction_hash": "0xfaaa17a02ec4cba8019f010d33f529981a5971d7dd69d5a8a190ccfdda699abc",
+            "trader_address": "0xbdd705c1bea262817f6d3a5cf480cceccae8d0ab",
+            "trader_address_label": "Token Millionaire",
+            "token_bought_address": "0x7a76db883446022ecbc86b9280e34055ec1be05c",
+            "token_sold_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+            "token_bought_amount": 187944.962598919,
+            "token_sold_amount": 666,
+            "token_bought_symbol": "RISE",
+            "token_sold_symbol": "USDC",
+            "token_bought_age_days": 482,
+            "token_sold_age_days": 2816,
+            "token_bought_market_cap": null,
+            "token_sold_market_cap": 78499325560,
+            "token_bought_fdv": 275882.872900164,
+            "token_sold_fdv": 78499721374,
+            "trade_value_usd": 665.8997310560211
+... (truncated 191 lines) ...
+}
+```
+
+</details>
+
+<details>
+<summary><code>smart-money-tracker</code></summary>
+
+```json
+{
+  "metadata": {
+    "status": "historical_live",
+    "source": "Nansen CLI -> MCP Nexus"
+  },
+  "data": {
+    "success": true,
+    "data": {
+      "success": true,
+      "data": {
+        "data": [
+          {
+            "token_address": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
+            "token_symbol": "LDO",
+            "net_flow_1h_usd": 0,
+            "net_flow_24h_usd": 253442.34317953387,
+            "net_flow_7d_usd": 253442.34317953387,
+            "net_flow_30d_usd": 253442.3311766702,
+            "chain": "ethereum",
+            "token_sectors": [],
+            "trader_count": 3,
+            "token_age_days": 1949,
+            "market_cap_usd": 322227915
+          },
+          {
+            "token_address": "0x8390a1da07e376ef7add4be859ba74fb83aa02d5",
+            "token_symbol": "GROK",
+            "net_flow_1h_usd": 0,
+            "net_flow_24h_usd": 23568.647689030906,
+            "net_flow_7d_usd": 23568.647689030906,
+... (truncated 130 lines) ...
+}
+```
+
+</details>
+
+<details>
+<summary><code>stable-shield</code></summary>
+
+```json
+{
+  "metadata": {
+    "status": "historical_live",
+    "source": "Nansen CLI -> MCP Nexus"
+  },
+  "data": {
+    "success": true,
+    "data": {
+      "success": true,
+      "data": {
+        "summary": {
+          "total_value_usd": 0,
+          "total_assets_usd": 0,
+          "total_debts_usd": 0,
+          "total_rewards_usd": 0,
+          "token_count": 0,
+          "protocol_count": 0
+        },
+        "protocols": []
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><code>token-flow-analyzer</code></summary>
+
+```json
+{
+  "metadata": {
+    "status": "historical_live",
+    "source": "Nansen CLI -> MCP Nexus"
+  },
+  "data": {
+    "success": true,
+    "data": {
+      "success": true,
+      "data": {
+        "data": [
+          {
+            "public_figure_net_flow_usd": 0,
+            "public_figure_avg_flow_usd": null,
+            "public_figure_wallet_count": 0,
+            "top_pnl_net_flow_usd": 0,
+            "top_pnl_avg_flow_usd": null,
+            "top_pnl_wallet_count": 0,
+            "whale_net_flow_usd": 0,
+            "whale_avg_flow_usd": null,
+            "whale_wallet_count": 0,
+            "smart_trader_net_flow_usd": 0,
+            "smart_trader_avg_flow_usd": null,
+            "smart_trader_wallet_count": 0,
+            "exchange_net_flow_usd": 0,
+            "exchange_avg_flow_usd": null,
+            "exchange_wallet_count": 0,
+            "fresh_wallets_net_flow_usd": 0,
+            "fresh_wallets_avg_flow_usd": 0,
+            "fresh_wallets_wallet_count": 0
+... (truncated 7 lines) ...
+}
+```
+
+</details>
+
+<details>
+<summary><code>wallet-profiler</code></summary>
+
+```json
+{
+  "metadata": {
+    "status": "historical_live",
+    "source": "Nansen CLI -> MCP Nexus"
+  },
+  "data": {
+    "success": true,
+    "data": {
+      "success": true,
+      "data": {
+        "pagination": {
+          "page": 1,
+          "per_page": 1,
+          "is_last_page": true
+        },
+        "top5_tokens": [],
+        "traded_token_count": 0,
+        "traded_times": 0,
+        "realized_pnl_usd": 0,
+        "realized_pnl_percent": 0,
+        "win_rate": 0
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><code>wallet-roast</code></summary>
+
+```json
+{
+  "metadata": {
+    "status": "historical_live",
+    "source": "Nansen CLI -> MCP Nexus"
+  },
+  "data": {
+    "success": true,
+    "data": {
+      "success": true,
+      "data": {
+        "pagination": {
+          "page": 1,
+          "per_page": 20,
+          "is_last_page": true
+        },
+        "data": []
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><code>wyckoff-screener</code></summary>
+
+```json
+{
+  "metadata": {
+    "status": "historical_live",
+    "source": "Nansen CLI -> MCP Nexus"
+  },
+  "data": {
+    "success": true,
+    "data": {
+      "success": true,
+      "data": {
+        "data": {
+          "name": "",
+          "symbol": "",
+          "contract_address": "0xd8da6bf26964af9d7eed9e03e53415dd37ae6abf",
+          "logo": "",
+          "token_details": {
+            "token_deployment_date": "",
+            "website": "",
+            "x": "",
+            "telegram": "",
+            "market_cap_usd": 0,
+            "fdv_usd": 0,
+            "circulating_supply": 0,
+            "total_supply": 0
+          },
+          "spot_metrics": {
+            "volume_total_usd": 0,
+            "buy_volume_usd": 0,
+            "sell_volume_usd": 0,
+            "total_buys": 0,
+... (truncated 11 lines) ...
+}
+```
+
+</details>
+<!-- EXAMPLES_END -->
+
 ---
 
 ## 📊 Nansen CLI Endpoint Coverage
