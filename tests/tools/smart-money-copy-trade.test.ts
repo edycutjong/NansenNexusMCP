@@ -1,29 +1,54 @@
 import { test, describe, afterEach } from 'node:test';
 import assert from 'node:assert';
-import { handler } from '../../src/tools/smart-money-copy-trade.js';
 import { setNansenMock } from '../../src/lib/nansen-cli.js';
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import smartMoneyCopyTradeModule from '../../src/tools/smart-money-copy-trade.js';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ToolHandler = (args: any) => Promise<any>;
+
+function extractHandler(): ToolHandler {
+    let captured: ToolHandler | null = null;
+    const mockServer = {
+        tool: (_name: string, _desc: string, _schema: unknown, handler: ToolHandler) => {
+            captured = handler;
+        }
+    } as unknown as McpServer;
+    smartMoneyCopyTradeModule.register(mockServer);
+    if (!captured) throw new Error('Handler not captured');
+    return captured;
+}
 
 describe('smart-money-copy-trade tool', () => {
     afterEach(() => {
-         
         setNansenMock(null);
     });
 
+    test('registers as a valid RegisterableModule', () => {
+        assert.strictEqual(smartMoneyCopyTradeModule.type, 'tool');
+        assert.strictEqual(smartMoneyCopyTradeModule.name, 'smart-money-copy-trade');
+        assert.ok(smartMoneyCopyTradeModule.description);
+    });
+
     test('handles data fetch failure', async () => {
+        const handler = extractHandler();
         setNansenMock(async () => ({ success: false, error: 'API Error' }));
         const res = await handler({ chain: 'ethereum', minTradeUsd: 50000 });
-        assert.ok(res.includes('Failed to fetch smart money dex trades'));
+        assert.strictEqual(res.isError, true);
+        assert.ok(res.content[0].text.includes('Failed to fetch smart money dex trades'));
     });
 
     test('returns mock data when empty array returned', async () => {
+        const handler = extractHandler();
         setNansenMock(async () => ({ success: true, data: { trades: [] } }));
-        const resJson = await handler({ chain: 'ethereum', minTradeUsd: 50000 });
-        const res = JSON.parse(resJson);
-        assert.strictEqual(res.status, 'mock');
-        assert.strictEqual(res.suggestions.length, 2);
+        const res = await handler({ chain: 'ethereum', minTradeUsd: 50000 });
+        const parsed = JSON.parse(res.content[0].text);
+        assert.strictEqual(parsed.status, 'mock');
+        assert.strictEqual(parsed.suggestions.length, 2);
     });
 
     test('identifies strong buy and buy signals properly ignoring stables', async () => {
+        const handler = extractHandler();
         setNansenMock(async () => ({ success: true, data: {
             trades: [
                 { amountUsd: 60000, tokenSymbol: 'ABC', side: 'buy' },
@@ -38,28 +63,29 @@ describe('smart-money-copy-trade tool', () => {
             ]
         }}));
 
-        const resJson = await handler({ chain: 'ethereum', minTradeUsd: 50000 });
-        const res = JSON.parse(resJson);
+        const res = await handler({ chain: 'ethereum', minTradeUsd: 50000 });
+        const parsed = JSON.parse(res.content[0].text);
         
-        assert.strictEqual(res.actionableTrades.length, 2);
+        assert.strictEqual(parsed.actionableTrades.length, 2);
         
         // Sorted by volume descendant
-        assert.strictEqual(res.actionableTrades[0].token, 'XYZ');
-        assert.strictEqual(res.actionableTrades[0].signal, 'STRONG BUY');
-        assert.strictEqual(res.actionableTrades[1].token, 'ABC');
-        assert.strictEqual(res.actionableTrades[1].signal, 'BUY');
-        assert.strictEqual(res.actionableTrades[1].smartMoneyBuyers, 2);
+        assert.strictEqual(parsed.actionableTrades[0].token, 'XYZ');
+        assert.strictEqual(parsed.actionableTrades[0].signal, 'STRONG BUY');
+        assert.strictEqual(parsed.actionableTrades[1].token, 'ABC');
+        assert.strictEqual(parsed.actionableTrades[1].signal, 'BUY');
+        assert.strictEqual(parsed.actionableTrades[1].smartMoneyBuyers, 2);
     });
 
     test('identifies no high-conviction trades', async () => {
+        const handler = extractHandler();
         setNansenMock(async () => ({ success: true, data: {
             trades: [
                 { amountUsd: 60000, tokenSymbol: 'LONE', side: 'buy' }
             ]
         }}));
 
-        const resJson = await handler({ chain: 'ethereum', minTradeUsd: 50000 });
-        const res = JSON.parse(resJson);
-        assert.strictEqual(res.actionableTrades, 'No high-conviction trades detected in the current window.');
+        const res = await handler({ chain: 'ethereum', minTradeUsd: 50000 });
+        const parsed = JSON.parse(res.content[0].text);
+        assert.strictEqual(parsed.actionableTrades, 'No high-conviction trades detected in the current window.');
     });
 });
