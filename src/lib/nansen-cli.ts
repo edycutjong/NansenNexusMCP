@@ -15,6 +15,9 @@ export interface NansenResponse<T = unknown> {
   status?: string;
 }
 
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let testMockHandler: ((command: string, args: string[]) => Promise<NansenResponse<any>>) | null = null;
 
@@ -22,11 +25,33 @@ export function setNansenMock(handler: typeof testMockHandler) {
   testMockHandler = handler;
 }
 
+export async function execNansen<T = unknown>(
+  command: string,
+  args: string[] = [],
+): Promise<NansenResponse<T>> {
+  const result = await _execNansenInternal<T>(command, args);
+
+  /* c8 ignore next 14 */
+  if (process.env.NODE_ENV !== 'production') {
+    try {
+      const LOG_DIR = path.resolve(process.cwd(), '.nansen-cache', 'request_logs');
+      if (!fs.existsSync(LOG_DIR)) fs.mkdirSync(LOG_DIR, { recursive: true });
+      const ts = new Date().toISOString().replace(/[:.]/g, '-');
+      const safeCmd = command.replace(/\s+/g, '_');
+      const filename = path.join(LOG_DIR, `${ts}-${safeCmd}.json`);
+      fs.writeFileSync(filename, JSON.stringify({ request: { command, args }, response: result }, null, 2));
+    } catch {
+      // silently fail logging
+    }
+  }
+
+  return result;
+}
+
 /**
- * Execute a nansen CLI command and parse the JSON output.
- * If NODE_ENV is test, this will mock the response.
+ * Internal un-intercepted execute function
  */
-export function execNansen<T = unknown>(
+async function _execNansenInternal<T = unknown>(
   command: string,
   args: string[] = [],
 ): Promise<NansenResponse<T>> {

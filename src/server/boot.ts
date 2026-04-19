@@ -60,7 +60,7 @@ export async function boot(
   const app = express();
   app.use(express.json({ limit: "1mb" }));
 
-  const corsOrigin = process.env.CORS_ORIGIN ?? "*";
+  const corsOrigin = process.env.CORS_ORIGIN ?? "http://localhost:3000";
   app.use(cors({ 
     origin: corsOrigin,
     credentials: true,
