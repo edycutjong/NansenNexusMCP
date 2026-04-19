@@ -23,7 +23,7 @@ const walletProfilerModule: RegisterableModule = {
           .describe("Include profit/loss analysis"),
       },
       async (args) => {
-        const { address, chain, includePnl } = args;
+        const { address, chain, includeHistory, includePnl } = args;
 
         const results = {
           metadata: {
@@ -47,6 +47,13 @@ const walletProfilerModule: RegisterableModule = {
           promises.push(
             execNansen('research profiler pnl-summary', ['--address', address, '--chain', chain])
               .then(res => { if (res.success) results.data.pnl = res.data; else results.data.pnlError = res.error; })
+          );
+        }
+
+        if (includeHistory) {
+          promises.push(
+            execNansen('research profiler transactions', ['--address', address, '--chain', chain])
+              .then(res => { if (res.success) results.data.history = res.data; else results.data.historyError = res.error; })
           );
         }
 
